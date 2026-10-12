@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thai Phrase Trainer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&family=Inter:wght@400;600&display=swap">
+<style>
+:root{--bg:#faf6ef;--card:#fff;--ink:#241f1a;--mute:#756c61;--line:#e7dfd1;--acc:#c2410c;--accbg:#ffedd5;--ok:#15803d;--okbg:#dcfce7;--bad:#b91c1c;--badbg:#fee2e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1613;--card:#262019;--ink:#f3ece2;--mute:#a69b8c;--line:#3a3128;--acc:#fb923c;--accbg:#3b2414;--ok:#4ade80;--okbg:#16301f;--bad:#f87171;--badbg:#3a1a1a}}
+:root[data-theme="dark"]{--bg:#1a1613;--card:#262019;--ink:#f3ece2;--mute:#a69b8c;--line:#3a3128;--acc:#fb923c;--accbg:#3b2414;--ok:#4ade80;--okbg:#16301f;--bad:#f87171;--badbg:#3a1a1a}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}
+.th{font-family:"Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:8px 0 2px}.sub{color:var(--mute);font-size:14px;margin:0 0 14px}
+.tabs,.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px}
+button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.thai{font-size:24px;font-weight:600}.rom{color:var(--acc);font-size:15px}.en{color:var(--mute);font-size:14px}
+.spk{border-radius:10px;padding:8px 11px;flex:none}
+.big{font-size:34px;text-align:center;margin:14px 0 4px;font-weight:600}.mid{text-align:center;color:var(--mute);margin-bottom:14px}
+.opt{display:block;width:100%;text-align:left;border-radius:12px;margin-bottom:8px;padding:12px 14px}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.bar{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.stat{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin-bottom:6px}
+.note{font-size:13px;color:var(--mute);margin-top:12px}
+.final{text-align:center;padding:10px 0}.final b{font-size:44px;display:block}
+.nx{background:var(--acc);color:#fff;border-color:var(--acc);width:100%;border-radius:12px;padding:12px;margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>🇹🇭 Thai Phrase Trainer</h1>
+<p class="sub">Learn your word list, then test yourself.</p>
+<div class="tabs"><button id="tL" class="on">Learn</button><button id="tQ">Quiz</button></div>
+<div id="app"></div>
+<p class="note">Audio uses your device's Thai voice if available.</p>
+</main>
+<script>
+const P=[
+["Basics","ค่ะ","khâ","Female participle"],
+["Basics","ครับ","khráp","Male participle"],
+["Basics","ใช่","châi","Yes"],
+["Basics","ไม่ใช่","mâi châi","No"],
+["Basics","ได้","dâai","Can"],
+["Basics","ไม่ได้","mâi dâai","Cannot"],
+["Basics","คุณ","khun","You"],
+["Basics","เขา","kháo","He / she"],
+["Basics","ผม","pom","Me (male)"],
+["Basics","ดิฉัน / ฉัน","dichan / chan","Me (female)"],
+["Have & Want","มี","mii","Have"],
+["Have & Want","ไม่มี","mâi mii","Don't have"],
+["Have & Want","เอา","ao","Want"],
+["Have & Want","ไม่เอา","mai ao","Don't want"],
+["Actions","ไป","pai","Go"],
+["Actions","เร็ว","reo","Fast"],
+["Actions","ไปเร็วๆ","pai reo-reo","Go quickly"],
+["Actions","มา","maa","Come"],
+["Actions","กิน","gin","Eat"],
+["Actions","กินแล้ว","gin láeo","Eaten already"],
+["Actions","อร่อย","à-ròi","Delicious"],
+["Actions","นิดหน่อย","nít-nòi","A bit"],
+["Numbers","หนึ่ง","nùeng","1"],
+["Numbers","สอง","sǎawng","2"],
+["Numbers","สาม","sǎam","3"],
+["Numbers","สี่","sìi","4"],
+["Numbers","ห้า","hâa","5"],
+["Numbers","หก","hòk","6"],
+["Numbers","เจ็ด","jèt","7"],
+["Numbers","แปด","bpàaet","8"],
+["Numbers","เก้า","gâao","9"],
+["Numbers","สิบ","sìp","10"],
+["Classroom","เก่งมาก","gèng mâak","Good job"],
+["Classroom","ดี","dii","Good"],
+["Classroom","ฟัง","fang","Listen"],
+["Classroom","ฟังดีๆ","fang dii-dii","Listen well"],
+["Classroom","เงียบ","ngîap","Keep quiet"],
+["Classroom","เข้าใจไหม","khâo-jai mái","Do you understand?"],
+["Classroom","เข้าใจ","khâo-jai","Understand"],
+["Classroom","ไม่เข้าใจ","mâi khâo-jai","Do not understand"],
+["Classroom","แล้วเจอกัน","leow zer gan","See you later"]
+].map(([c,t,r,e])=>({c,t,r,e}));
+const cats=["All",...new Set(P.map(p=>p.c))];
+let tab="L",cat="All",mode="te",q=null;
+const $=s=>document.querySelector(s),app=$("#app");
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let best={};try{best=JSON.parse(localStorage.getItem("thaiBest")||"{}")}catch(e){}
+function speak(t){try{const s=window.speechSynthesis;s.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="th-TH";u.rate=.8;s.speak(u)}catch(e){}}
+const MODES={te:"Thai → English",et:"English → Thai",li:"Listen → English"};
+function setTab(t){tab=t;$("#tL").classList.toggle("on",t=="L");$("#tQ").classList.toggle("on",t=="Q");t=="L"?learn():menu()}
+$("#tL").onclick=()=>setTab("L");$("#tQ").onclick=()=>setTab("Q");
+function learn(){
+ app.innerHTML=`<div class="chips">${cats.map(c=>`<button class="${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>`+
+ P.filter(p=>cat=="All"||p.c==cat).map(p=>`<div class="card row"><div><div class="thai th">${p.t}</div><div class="rom">${p.r}</div><div class="en">${p.e}</div></div><button class="spk" data-s="${p.t}" aria-label="Play">🔊</button></div>`).join("");
+ app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{cat=b.dataset.c;learn()});
+ app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>speak(b.dataset.s));
+}
+function menu(){
+ app.innerHTML=`<div class="card"><b>Choose a quiz</b><div class="chips" style="margin-top:10px">${Object.entries(MODES).map(([k,v])=>`<button class="${k==mode?"on":""}" data-m="${k}">${v}</button>`).join("")}</div>
+ <div class="chips">${cats.map(c=>`<button class="${c==cat?"on":""}" data-c="${c}">${c}</button>`).join("")}</div>
+ <button class="nx" id="go">Start 10 questions</button><p class="note">Best in this mode: ${best[mode]??"—"}/10</p></div>`;
+ app.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mode=b.dataset.m;menu()});
+ app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{cat=b.dataset.c;menu()});
+ $("#go").onclick=start;
+}
+function start(){
+ const pool=P.filter(p=>cat=="All"||p.c==cat);
+ if(pool.length<4){cat="All";return start()}
+ q={items:shuffle(pool).slice(0,10),i:0,score:0,pool:P};next();
+}
+function next(){
+ if(q.i>=q.items.length)return done();
+ const a=q.items[q.i],opts=shuffle([a,...shuffle(q.pool.filter(p=>p!==a)).slice(0,3)]);
+ const toThai=mode=="et";
+ const prompt=mode=="te"?`<div class="big th">${a.t}</div><div class="mid">${a.r}</div>`:
+  mode=="et"?`<div class="big">${a.e}</div><div class="mid">Pick the Thai phrase</div>`:
+  `<div class="big"><button class="spk" id="rep" style="font-size:28px">🔊</button></div><div class="mid">Listen and pick the meaning</div>`;
+ app.innerHTML=`<div class="stat"><span>Question ${q.i+1}/${q.items.length}</span><span>Score ${q.score}</span></div><div class="bar"><i style="width:${q.i/q.items.length*100}%"></i></div>
+ <div class="card">${prompt}</div>`+opts.map((o,k)=>`<button class="opt ${toThai?"th":""}" data-k="${k}">${toThai?`<span style="font-size:18px">${o.t}</span><br><small class="rom">${o.r}</small>`:o.e}</button>`).join("")+`<div id="nx"></div>`;
+ if(mode=="li"){speak(a.t);$("#rep").onclick=()=>speak(a.t)}
+ app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+  const ok=opts[b.dataset.k]===a;if(ok)q.score++;
+  app.querySelectorAll(".opt").forEach((x,k)=>{x.disabled=true;if(opts[k]===a)x.classList.add("ok")});
+  if(!ok)b.classList.add("bad");
+  if(mode!="et")speak(a.t);
+  $("#nx").innerHTML=`<p class="note" style="margin:0 0 8px"><span class="th">${a.t}</span> · ${a.r} · ${a.e}</p><button class="nx">${q.i+1<q.items.length?"Next":"See results"}</button>`;
+  $("#nx button").onclick=()=>{q.i++;next()};
+ });
+}
+function done(){
+ const n=q.score,tot=q.items.length;
+ if(n>(best[mode]||0)){best[mode]=n;try{localStorage.setItem("thaiBest",JSON.stringify(best))}catch(e){}}
+ app.innerHTML=`<div class="card final"><b>${n}/${tot}</b>${n==tot?"Perfect! เก่งมาก (gèng mâak)":n>=7?"Great job!":"Keep practicing — try Learn mode first."}<p class="note">Best (${MODES[mode]}): ${best[mode]}/10</p><button class="nx" id="again">Play again</button></div>`;
+ $("#again").onclick=menu;
+}
+learn();
+</script>
+</body>
+</html>
