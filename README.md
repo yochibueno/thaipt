@@ -1,2 +1,3 @@
 basic phrases for conversational Thai
-added some classroom phrases
+
+plus some classroom phrases
